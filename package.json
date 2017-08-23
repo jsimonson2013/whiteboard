@@ -1,0 +1,28 @@
+{
+  "name": "node-boilerplate",
+  "version": "1.0.0",
+  "description": "Boilerplate for my node projects",
+  "main": "index.js",
+  "scripts": {
+    "dev": "gulp",
+    "test": "karma start karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsimonson2013/node-boilerplate.git"
+  },
+  "author": "Jacob Simonson <jsimonson2013@gmail.com> (https://jacobsimonson.me)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jsimonson2013/node-boilerplate/issues"
+  },
+  "homepage": "https://github.com/jsimonson2013/node-boilerplate#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-connect": "^5.0.0",
+    "jasmine": "^2.7.0",
+    "karma": "^1.7.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.4"
+  }
+}
