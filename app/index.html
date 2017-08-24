@@ -27,13 +27,14 @@
 
         window.addEventListener('touchstart', event => {
           const circle = document.createElement('a-circle')
+          const camPos = document.querySelector('a-camera').getAttribute('position')
 
           const scaledX = event.changedTouches[0].pageX * xBound / winWidth
           const scaledY = event.changedTouches[0].pageY * yBound / winHeight
 
           circle.setAttribute('position', {
-            'x': scaledX,
-            'y': scaledY,
+            'x': scaledX - xBound,
+            'y': yBound - scaledY - yBound,
             'z': -1*distance
           })
 
