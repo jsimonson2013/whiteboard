@@ -10,6 +10,8 @@
       init: function() {
       },
       play: function() {
+        const HALF_PI = Math.PI/180
+
         const fov = document.querySelector('a-camera').getAttribute('fov')
         const height = document.querySelector('a-camera').getAttribute('userHeight')
         const scene = document.querySelector('a-scene')
@@ -18,26 +20,37 @@
         const winHeight = window.innerHeight
         const winRatio = winWidth/winHeight
 
-        const distance = 10
+        const distance = 50
         const trigAngle = 0.5*fov
         const range = distance*Math.atan(trigAngle)
 
         const xBound = winRatio*range
         const yBound = (1/winRatio)*range
 
-        window.addEventListener('touchstart', event => {
+        window.addEventListener('click', event => {
           const circle = document.createElement('a-circle')
-          const camPos = document.querySelector('a-camera').getAttribute('position')
 
-          const scaledX = event.changedTouches[0].pageX * xBound / winWidth
-          const scaledY = event.changedTouches[0].pageY * yBound / winHeight
+          const camPos = document.querySelector('a-camera').getAttribute('position')
+          const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
+          const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
+
+          const scaledX = event.detail.x
+          const scaledY = event.detail.y
 
           circle.setAttribute('position', {
-            'x': scaledX - xBound,
-            'y': yBound - scaledY - yBound,
-            'z': -1*distance
+            'x': -Math.sqrt(distance)*Math.sin(camTheta),
+            'y': Math.sqrt(distance)*Math.sin(camPhi) + height,
+            'z': -1*Math.sqrt(distance)*Math.cos(camTheta)
           })
 
+          circle.setAttribute('rotation', {
+            'x': camPhi/HALF_PI,
+            'y': camTheta/HALF_PI,
+            'z': 0
+          })
+
+          circle.setAttribute('side', 'double')
+          
           scene.appendChild(circle)
         })
       },
