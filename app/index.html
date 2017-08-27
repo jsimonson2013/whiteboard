@@ -12,20 +12,20 @@
       play: function() {
         const HALF_PI = Math.PI/180
 
-        const fov = document.querySelector('a-camera').getAttribute('fov')
-        const height = document.querySelector('a-camera').getAttribute('userHeight')
+        const fov = document.querySelector('a-camera').getAttribute('fov')*HALF_PI
+        const height = Number(document.querySelector('a-camera').getAttribute('userHeight'))
         const scene = document.querySelector('a-scene')
 
         const winWidth = window.innerWidth
         const winHeight = window.innerHeight
         const winRatio = winWidth/winHeight
 
-        const distance = 50
-        const trigAngle = 0.5*fov
-        const range = distance*Math.atan(trigAngle)
+        const distance = 400
+        const range = distance*Math.tan(fov)
 
-        const xBound = winRatio*range
-        const yBound = (1/winRatio)*range
+        // these can be determined with fov, distance, and window dimensions
+        const RANGE_X = 1
+        const RANGE_Y = 3
 
         window.addEventListener('click', event => {
           const circle = document.createElement('a-circle')
@@ -34,13 +34,17 @@
           const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
           const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
 
-          const scaledX = event.detail.x
-          const scaledY = event.detail.y
+          const shiftedX = RANGE_X/(winWidth*0.5)*(event.pageX - winWidth*0.5)
+          const shiftedY = RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - event.pageY)
+
+          const posX = Number(-Math.sqrt(distance)*Math.sin(camTheta)) + shiftedX || shiftedX
+          const posY = Number(Math.sqrt(distance)*Math.sin(camPhi)) + height + shiftedY || height + shiftedY
+          const posZ = Number(-1*Math.sqrt(distance)*Math.cos(camTheta)) || distance
 
           circle.setAttribute('position', {
-            'x': -Math.sqrt(distance)*Math.sin(camTheta),
-            'y': Math.sqrt(distance)*Math.sin(camPhi) + height,
-            'z': -1*Math.sqrt(distance)*Math.cos(camTheta)
+            'x': posX,
+            'y': posY,
+            'z': posZ
           })
 
           circle.setAttribute('rotation', {
@@ -50,7 +54,7 @@
           })
 
           circle.setAttribute('side', 'double')
-          
+
           scene.appendChild(circle)
         })
       },
@@ -66,7 +70,7 @@
       <a-sky color="blue" touch-listener></a-sky>
   		<!-- <a-box position='0 0 0.5' material='opacity: 0.5;'></a-box> -->
   		<!-- <a-marker-camera preset='hiro'></a-marker-camera> -->
-      <a-camera fov="80" userHeight="1.6"></a-camera>
+      <a-camera fov="20" userHeight="1.6"></a-camera>
   	</a-scene>
   </body>
 </html>
