@@ -27,15 +27,15 @@
         const RANGE_X = 1
         const RANGE_Y = 3
 
-        window.addEventListener('click', event => {
+        window.addEventListener('touchmove', event => {
           const circle = document.createElement('a-circle')
 
           const camPos = document.querySelector('a-camera').getAttribute('position')
           const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
           const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
 
-          const shiftedX = RANGE_X/(winWidth*0.5)*(event.pageX - winWidth*0.5)
-          const shiftedY = RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - event.pageY)
+          const shiftedX = RANGE_X/(winWidth*0.5)*(event.touches[0].pageX - winWidth*0.5)
+          const shiftedY = RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - event.touches[0].pageY)
 
           const posX = Number(-Math.sqrt(distance)*Math.sin(camTheta)) + shiftedX || shiftedX
           const posY = Number(Math.sqrt(distance)*Math.sin(camPhi)) + height + shiftedY || height + shiftedY
@@ -54,7 +54,7 @@
           })
 
           circle.setAttribute('side', 'double')
-
+          circle.setAttribute('radius', 0.2)
           scene.appendChild(circle)
         })
       },
@@ -70,7 +70,7 @@
       <a-sky color="blue" touch-listener></a-sky>
   		<!-- <a-box position='0 0 0.5' material='opacity: 0.5;'></a-box> -->
   		<!-- <a-marker-camera preset='hiro'></a-marker-camera> -->
-      <a-camera fov="20" userHeight="1.6"></a-camera>
+      <a-camera fov="20" userHeight="1.6" look-controls="enabled: false;"></a-camera>
   	</a-scene>
   </body>
 </html>
