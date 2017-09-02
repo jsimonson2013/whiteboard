@@ -3,7 +3,7 @@
   <title>Node Boilerplate</title>
   <script src="index.js"></script>
   <script src="../aframe.js"></script>
-  <!-- <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script> -->
+  <script src="https://rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
   <link rel="manifest" href="./manifest.json"/>
   <script>
     AFRAME.registerComponent('touch-listener', {
@@ -67,9 +67,8 @@
   <body style='margin : 0px; overflow: hidden;'>
   	<!-- <a-scene embedded artoolkit='sourceType: webcam;'> -->
     <a-scene>
-      <a-sky color="blue" touch-listener></a-sky>
-  		<!-- <a-box position='0 0 0.5' material='opacity: 0.5;'></a-box> -->
-  		<!-- <a-marker-camera preset='hiro'></a-marker-camera> -->
+      <a-entity environment="preset: yavapai" touch-listener></a-entity>
+  		<a-marker-camera preset='hiro'></a-marker-camera>
       <a-camera fov="20" userHeight="1.6" look-controls="touchEnabled: false;"></a-camera>
   	</a-scene>
   </body>
