@@ -6,8 +6,61 @@
   <script src="https://rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
   <link rel="manifest" href="./manifest.json"/>
   <script>
-    AFRAME.registerComponent('touch-listener', {
+    AFRAME.registerSystem('magic-window-drawing', {
+      schema: {
+        'colors': {default: ['']},
+        'currentColor': {default: 0}
+      },
       init: function() {
+        console.log('init magic-window-drawing')
+
+        this.data.colors = [
+          'red',
+          'orange',
+          'yellow',
+          'green',
+          'blue',
+          'violet'
+        ]
+
+        this.data.currentColor = 0
+      }
+    })
+
+    AFRAME.registerComponent('color-select', {
+      init: function() {
+        console.log('init color-select')
+      },
+      play: function() {
+        const Y_THRESHOLD = window.innerHeight - window.innerHeight/3.5
+
+        const cycleColor = () => {
+          if (this.el.sceneEl.systems['magic-window-drawing'].data.currentColor === this.el.sceneEl.systems['magic-window-drawing'].data.colors.length - 1) {
+            this.el.sceneEl.systems['magic-window-drawing'].data.currentColor = 0
+          }
+          else{
+            this.el.sceneEl.systems['magic-window-drawing'].data.currentColor ++
+          }
+
+          this.el.setAttribute('color', this.el.sceneEl.systems['magic-window-drawing'].data.colors[this.el.sceneEl.systems['magic-window-drawing'].data.currentColor])
+        }
+
+        window.addEventListener('touchstart', event => {
+          if (event.touches[0].pageY > Y_THRESHOLD)
+            cycleColor()
+        })
+      },
+      pause: function() {
+
+      }
+    })
+
+    AFRAME.registerComponent('touch-listener', {
+      schema: {
+        'color': {default: 'white'}
+      },
+      init: function() {
+        console.log('init touch-listener')
       },
       play: function() {
         const HALF_PI = Math.PI/180
@@ -27,15 +80,15 @@
         const RANGE_X = 1
         const RANGE_Y = 3
 
-        window.addEventListener('touchmove', event => {
+        placeCircleAtTouch = touch => {
           const circle = document.createElement('a-circle')
 
           const camPos = document.querySelector('a-camera').getAttribute('position')
           const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
           const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
 
-          const shiftedX = RANGE_X/(winWidth*0.5)*(event.touches[0].pageX - winWidth*0.5)
-          const shiftedY = RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - event.touches[0].pageY)
+          const shiftedX = RANGE_X/(winWidth*0.5)*(touch.pageX - winWidth*0.5)
+          const shiftedY = RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - touch.pageY)
 
           const posX = Number(-Math.sqrt(distance)*Math.sin(camTheta)) + shiftedX || shiftedX
           const posY = Number(Math.sqrt(distance)*Math.sin(camPhi)) + height + shiftedY || height + shiftedY
@@ -53,9 +106,28 @@
             'z': 0
           })
 
-          circle.setAttribute('side', 'double')
-          circle.setAttribute('radius', 0.2)
+          circle.setAttribute('material', {
+            'side': 'double',
+            'color': scene.systems['magic-window-drawing'].data.colors[scene.systems['magic-window-drawing'].data.currentColor]
+          })
+
+          circle.setAttribute('geometry',{
+            'radius': 0.1
+          })
+
           scene.appendChild(circle)
+        }
+
+        window.addEventListener('touchstart', event => {
+          placeCircleAtTouch(event.touches[0])
+        })
+
+        window.addEventListener('touchmove', event => {
+          placeCircleAtTouch(event.touches[0])
+        })
+
+        window.addEventListener('touchend', event => {
+          placeCircleAtTouch(event.changedTouches[0])
         })
       },
       pause: function() {
@@ -65,11 +137,11 @@
   </script>
 </head>
   <body style='margin : 0px; overflow: hidden;'>
-  	<!-- <a-scene embedded artoolkit='sourceType: webcam;'> -->
     <a-scene>
-      <a-entity environment="preset: yavapai" touch-listener></a-entity>
-  		<a-marker-camera preset='hiro'></a-marker-camera>
-      <a-camera fov="20" userHeight="1.6" look-controls="touchEnabled: false;"></a-camera>
+      <a-entity environment="preset: yavapai" touch-listener="color: red"></a-entity>
+      <a-camera id="camera" fov="20" userHeight="1.6" look-controls="touchEnabled: false;">
+    		<a-circle position="0 -0.185 -1.693" scale="0.1 0.1" color="red" color-select></a-circle>
+      </a-camera>
   	</a-scene>
   </body>
 </html>
