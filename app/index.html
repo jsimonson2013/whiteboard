@@ -2,7 +2,7 @@
 <head>
   <title>Node Boilerplate</title>
   <script src="index.js"></script>
-  <script src="https://aframe.io/releases/0.6.1/aframe.min.js"></script>
+  <script src="../aframe.js"></script>
   <!-- <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script> -->
   <link rel="manifest" href="./manifest.json"/>
   <script>
@@ -70,7 +70,7 @@
       <a-sky color="blue" touch-listener></a-sky>
   		<!-- <a-box position='0 0 0.5' material='opacity: 0.5;'></a-box> -->
   		<!-- <a-marker-camera preset='hiro'></a-marker-camera> -->
-      <a-camera fov="20" userHeight="1.6" look-controls="enabled: false;"></a-camera>
+      <a-camera fov="20" userHeight="1.6" look-controls="touchEnabled: false;"></a-camera>
   	</a-scene>
   </body>
 </html>
