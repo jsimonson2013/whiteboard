@@ -65,20 +65,24 @@
       play: function() {
         const HALF_PI = Math.PI/180
 
-        const fov = document.querySelector('a-camera').getAttribute('fov')*HALF_PI
+        const cam = document.querySelector('a-camera').object3D.children[1] // get the THREE.js PerspectiveCamera
+        const DISTANCE = 400
+        const SCALE = 0.025
+
+        const Y_FOV = cam.fov*HALF_PI
+        const X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*cam.aspect) // r = tan(H/2)/tan(Y/2)
+
         const height = Number(document.querySelector('a-camera').getAttribute('userHeight'))
         const scene = document.querySelector('a-scene')
 
         const winWidth = window.innerWidth
         const winHeight = window.innerHeight
-        const winRatio = winWidth/winHeight
 
-        const distance = 400
-        const range = distance*Math.tan(fov)
+        // these can be determined with fov and distance
+        const RANGE_X = DISTANCE*Math.tan(X_FOV)
+        const RANGE_Y = DISTANCE*Math.tan(Y_FOV)
 
-        // these can be determined with fov, distance, and window dimensions
-        const RANGE_X = 1
-        const RANGE_Y = 3
+        console.log(`RANGE_X: ${RANGE_X} meters, RANGE_Y: ${RANGE_Y} meters.`)
 
         placeCircleAtTouch = touch => {
           const circle = document.createElement('a-circle')
@@ -87,12 +91,12 @@
           const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
           const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
 
-          const shiftedX = RANGE_X/(winWidth*0.5)*(touch.pageX - winWidth*0.5)
-          const shiftedY = RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - touch.pageY)
+          const shiftedX = SCALE*RANGE_X/(winWidth*0.5)*(touch.pageX - winWidth*0.5)
+          const shiftedY = SCALE*RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - touch.pageY)
 
-          const posX = Number(-Math.sqrt(distance)*Math.sin(camTheta)) + shiftedX || shiftedX
-          const posY = Number(Math.sqrt(distance)*Math.sin(camPhi)) + height + shiftedY || height + shiftedY
-          const posZ = Number(-1*Math.sqrt(distance)*Math.cos(camTheta)) || distance
+          const posX = Number(-Math.sqrt(DISTANCE)*Math.sin(camTheta)) + shiftedX || shiftedX
+          const posY = Number(Math.sqrt(DISTANCE)*Math.sin(camPhi)) + height + shiftedY || height + shiftedY
+          const posZ = Number(-1*Math.sqrt(DISTANCE)*Math.cos(camTheta)) || DISTANCE
 
           circle.setAttribute('position', {
             'x': posX,
