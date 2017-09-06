@@ -65,21 +65,37 @@
       play: function() {
         const HALF_PI = Math.PI/180
 
-        const cam = document.querySelector('a-camera').object3D.children[1] // get the THREE.js PerspectiveCamera
+        let cam = document.querySelector('a-camera').object3D.children[1] // get the THREE.js PerspectiveCamera
         const DISTANCE = 400
         const SCALE = 0.025
 
-        const Y_FOV = cam.fov*HALF_PI
-        const X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*cam.aspect) // r = tan(H/2)/tan(Y/2)
+        let Y_FOV = cam.fov*HALF_PI
+        let X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*cam.aspect) // r = tan(H/2)/tan(Y/2)
 
         const height = Number(document.querySelector('a-camera').getAttribute('userHeight'))
         const scene = document.querySelector('a-scene')
 
-        const winWidth = window.innerWidth
-        const winHeight = window.innerHeight
+        let winWidth = window.innerWidth
+        let winHeight = window.innerHeight
 
-        const RANGE_X = DISTANCE*Math.tan(X_FOV)
-        const RANGE_Y = DISTANCE*Math.tan(Y_FOV)
+        let RANGE_X = DISTANCE*Math.tan(X_FOV)
+        let RANGE_Y = DISTANCE*Math.tan(Y_FOV)
+
+        // recalculate aspect values when orientation changes
+        window.addEventListener('orientationchange', () => {
+          setTimeout(() => {
+            winWidth = window.innerWidth
+            winHeight = window.innerHeight
+
+            cam = document.querySelector('a-camera').object3D.children[1]
+
+            Y_FOV = cam.fov*HALF_PI
+            X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*cam.aspect)
+
+            RANGE_X = DISTANCE*Math.tan(X_FOV)
+            RANGE_Y = DISTANCE*Math.tan(Y_FOV)
+          }, 1000)
+        })
 
         placeCircleAtTouch = touch => {
           const circle = document.createElement('a-circle')
