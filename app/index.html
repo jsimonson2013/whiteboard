@@ -99,15 +99,19 @@
         placeCircleAtTouch = touch => {
           const circle = document.createElement('a-circle')
 
-          const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
           const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
+          const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
 
           const horizontalShift = SCALE*RANGE_X/(winWidth*0.5)*(touch.pageX - winWidth*0.5)
           const verticalShift = SCALE*RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - touch.pageY)
 
           const posX = Number(-Math.sqrt(DISTANCE)*Math.sin(camTheta)) + Number(horizontalShift*Math.cos(camTheta)) || horizontalShift
-          const posY = Number(Math.sqrt(DISTANCE)*Math.sin(camPhi)) + height + verticalShift || height + verticalShift
-          const posZ = Number(-1*Math.sqrt(DISTANCE)*Math.cos(camTheta)) - Number(horizontalShift*Math.sin(camTheta)) || DISTANCE
+          const posY = Number(Math.sqrt(DISTANCE)*Math.sin(camPhi)) + Number((verticalShift + height)*Math.cos(camPhi)) || height + verticalShift
+          const posZ = // Number(-1*Math.sqrt(DISTANCE)*Math.cos(camPhi)) + Number(verticalShift*Math.sin(camPhi)) // vertical component
+            + Number(-1*Math.sqrt(DISTANCE)*Math.cos(camTheta)) - Number(horizontalShift*Math.sin(camTheta)) // horizontal component
+            || DISTANCE
+
+          console.log(`(${posX}, ${posY}, ${posZ}), (${camPhi}, ${camTheta})`)
 
           circle.setAttribute('position', {
             'x': posX,
