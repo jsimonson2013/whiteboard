@@ -107,9 +107,7 @@
 
           const posX = Number(-Math.sqrt(DISTANCE)*Math.sin(camTheta)) + Number(horizontalShift*Math.cos(camTheta)) || horizontalShift
           const posY = Number(Math.sqrt(DISTANCE)*Math.sin(camPhi)) + Number((verticalShift + height)*Math.cos(camPhi)) || height + verticalShift
-          const posZ = // Number(-1*Math.sqrt(DISTANCE)*Math.cos(camPhi)) + Number(verticalShift*Math.sin(camPhi)) // vertical component
-            + Number(-1*Math.sqrt(DISTANCE)*Math.cos(camTheta)) - Number(horizontalShift*Math.sin(camTheta)) // horizontal component
-            || DISTANCE
+          const posZ = Number(-1*Math.sqrt(DISTANCE)*Math.cos(camTheta)*Math.abs(Math.cos(camPhi))) + Number(verticalShift*Math.sin(camPhi)) - Number(horizontalShift*Math.sin(camTheta)) || DISTANCE
 
           console.log(`(${posX}, ${posY}, ${posZ}), (${camPhi}, ${camTheta})`)
 
