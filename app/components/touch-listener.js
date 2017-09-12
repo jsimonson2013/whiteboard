@@ -1,9 +1,13 @@
 AFRAME.registerComponent('touch-listener', {
   schema: {
-    'color': {default: 'white'}
+    dragEnabled: {default: true},
+    position: {default: '0 0 0'},
+    primitive: {default: 'circle'},
+    rotation: {default: '0 0 0'},
+    scale: {default: '1 1 1'}
   },
   init: function() {
-    console.log('init touch-listener')
+
   },
   play: function() {
     const HALF_PI = Math.PI/180
@@ -41,7 +45,7 @@ AFRAME.registerComponent('touch-listener', {
     })
 
     placeCircleAtTouch = touch => {
-      const circle = document.createElement('a-circle')
+      const circle = document.createElement(`a-${this.data.primitive}`)
 
       const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
       const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
@@ -84,6 +88,8 @@ AFRAME.registerComponent('touch-listener', {
     })
 
     window.addEventListener('touchmove', event => {
+      if (!this.data.dragEnabled) {return}
+
       placeCircleAtTouch(event.touches[0])
     })
 
