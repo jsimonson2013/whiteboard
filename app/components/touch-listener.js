@@ -10,54 +10,63 @@ AFRAME.registerComponent('touch-listener', {
 
   },
   play: function() {
+    const NULL_VAL = -9999999
     const HALF_PI = Math.PI/180
-
-    let cam = document.querySelector('a-camera').object3D.children[1] // get the THREE.js PerspectiveCamera
     const DISTANCE = 400
     const SCALE = 0.025
 
-    let Y_FOV = cam.fov*HALF_PI
-    let X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*cam.aspect) // r = tan(H/2)/tan(Y/2)
-
-    const height = Number(document.querySelector('a-camera').getAttribute('userHeight'))
+    const cam = document.querySelector('a-camera')
     const scene = document.querySelector('a-scene')
 
-    let winWidth = window.innerWidth
-    let winHeight = window.innerHeight
+    let Y_THRESHOLD = scene.systems['magic-window-drawing'].data.yThreshold
+
+    const height = Number(cam.getAttribute('userHeight'))
+    let camTHREE = cam.object3D.children[1] // get the THREE.js PerspectiveCamera
+
+    let Y_FOV = camTHREE.fov*HALF_PI
+    let X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*camTHREE.aspect) // r = tan(H/2)/tan(Y/2)
 
     let RANGE_X = DISTANCE*Math.tan(X_FOV)
     let RANGE_Y = DISTANCE*Math.tan(Y_FOV)
 
+    let winWidth = window.innerWidth
+    let winHeight = window.innerHeight
+
     // recalculate aspect values when orientation changes
     window.addEventListener('orientationchange', () => {
       setTimeout(() => {
-        winWidth = window.innerWidth
-        winHeight = window.innerHeight
+        camTHREE = document.querySelector('a-camera').object3D.children[1]
 
-        cam = document.querySelector('a-camera').object3D.children[1]
-
-        Y_FOV = cam.fov*HALF_PI
-        X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*cam.aspect)
+        Y_FOV = camTHREE.fov*HALF_PI
+        X_FOV = 2*Math.atan(Math.tan(Y_FOV*0.5)*camTHREE.aspect)
 
         RANGE_X = DISTANCE*Math.tan(X_FOV)
         RANGE_Y = DISTANCE*Math.tan(Y_FOV)
+
+        winWidth = window.innerWidth
+        winHeight = window.innerHeight
+
+        Y_THRESHOLD = winHeight - winHeight/3.5
+        scene.systems['magic-window-drawing'].data.yThreshold = Y_THRESHOLD
       }, 1000)
     })
 
     placeCircleAtTouch = touch => {
-      const circle = document.createElement(`a-${this.data.primitive}`)
+      if (touch.pageY > Y_THRESHOLD) {return}
 
-      const camPhi = document.querySelector('a-camera').getAttribute('rotation').x*HALF_PI
-      const camTheta = document.querySelector('a-camera').getAttribute('rotation').y*HALF_PI
+      const camPhi = cam.getAttribute('rotation').x*HALF_PI
+      const camTheta = cam.getAttribute('rotation').y*HALF_PI
 
       const horizontalShift = SCALE*RANGE_X/(winWidth*0.5)*(touch.pageX - winWidth*0.5)
       const verticalShift = SCALE*RANGE_Y/(winHeight*0.5)*(winHeight*0.5 - touch.pageY)
 
-      const posX = Number(-Math.sqrt(DISTANCE)*Math.sin(camTheta)) + Number(horizontalShift*Math.cos(camTheta)) || horizontalShift
-      const posY = Number(Math.sqrt(DISTANCE)*Math.sin(camPhi)) + Number((verticalShift + height)*Math.cos(camPhi)) || height + verticalShift
-      const posZ = Number(-1*Math.sqrt(DISTANCE)*Math.cos(camTheta)*Math.abs(Math.cos(camPhi))) + Number(verticalShift*Math.sin(camPhi)) - Number(horizontalShift*Math.sin(camTheta)) || DISTANCE
+      const circle = document.createElement(`a-${this.data.primitive}`)
 
-      console.log(`(${posX}, ${posY}, ${posZ}), (${camPhi}, ${camTheta})`)
+      const posX = Number(-Math.sqrt(DISTANCE)*Math.sin(camTheta)) + Number(horizontalShift*Math.cos(camTheta))
+      const posY = Number(Math.sqrt(DISTANCE)*Math.sin(camPhi)) + Number((verticalShift + height)*Math.cos(camPhi))
+      const posZ = Number(-1*Math.sqrt(DISTANCE)*Math.cos(camTheta)*Math.abs(Math.cos(camPhi))) + Number(verticalShift*Math.sin(camPhi)) - Number(horizontalShift*Math.sin(camTheta))
+
+      if (!posX || !posY || !posZ) {return} // return if NaN during position calculations
 
       circle.setAttribute('position', {
         'x': posX,

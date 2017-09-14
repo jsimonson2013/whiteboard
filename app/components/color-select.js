@@ -3,17 +3,23 @@ AFRAME.registerComponent('color-select', {
     console.log('init color-select')
   },
   play: function() {
-    const Y_THRESHOLD = window.innerHeight - window.innerHeight/3.5
+    const systemData = this.el.sceneEl.systems['magic-window-drawing'].data
+
+    const colors = systemData.colors
+    let curr = systemData.currentColor
+    const Y_THRESHOLD = systemData.yThreshold
 
     const cycleColor = () => {
-      if (this.el.sceneEl.systems['magic-window-drawing'].data.currentColor === this.el.sceneEl.systems['magic-window-drawing'].data.colors.length - 1) {
-        this.el.sceneEl.systems['magic-window-drawing'].data.currentColor = 0
+      if (curr === colors.length - 1) {
+        curr = 0
       }
       else{
-        this.el.sceneEl.systems['magic-window-drawing'].data.currentColor ++
+        curr ++
       }
 
-      this.el.setAttribute('color', this.el.sceneEl.systems['magic-window-drawing'].data.colors[this.el.sceneEl.systems['magic-window-drawing'].data.currentColor])
+      this.el.setAttribute('color', colors[curr])
+
+      this.el.sceneEl.systems['magic-window-drawing'].data.currentColor = curr
     }
 
     window.addEventListener('touchstart', event => {

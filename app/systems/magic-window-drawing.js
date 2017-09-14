@@ -16,5 +16,7 @@ AFRAME.registerSystem('magic-window-drawing', {
     ]
 
     this.data.currentColor = 0
+
+    this.data.yThreshold = window.innerHeight - window.innerHeight/3.5
   }
 })
