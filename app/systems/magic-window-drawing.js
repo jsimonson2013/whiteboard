@@ -1,7 +1,8 @@
 AFRAME.registerSystem('magic-window-drawing', {
   schema: {
     'colors': {default: ['']},
-    'currentColor': {default: 0}
+    'currentColor': {default: 0},
+    'yThreshold': {default: 0}
   },
   init: function() {
     console.log('init magic-window-drawing')

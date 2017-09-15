@@ -7,7 +7,6 @@ AFRAME.registerComponent('color-select', {
 
     const colors = systemData.colors
     let curr = systemData.currentColor
-    const Y_THRESHOLD = systemData.yThreshold
 
     const cycleColor = () => {
       if (curr === colors.length - 1) {
@@ -23,7 +22,7 @@ AFRAME.registerComponent('color-select', {
     }
 
     window.addEventListener('touchstart', event => {
-      if (event.touches[0].pageY > Y_THRESHOLD)
+      if (event.touches[0].pageY > this.el.sceneEl.systems['magic-window-drawing'].data.yThreshold)
         cycleColor()
     })
   },
